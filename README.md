@@ -28,7 +28,7 @@ This project analyzes sentiment patterns in social media text data related to di
 
 ## Technologies Used
 - **Programming Language:** Python  
-- **Libraries:** `pandas`, `numpy`, `matplotlib`, `seaborn`, `nltk`, `vaderSentiment`  
+- **Libraries:** `pandas`, `numpy`, `matplotlib`, `seaborn`, `nltk`, `vaderSentiment`, `transformers`, `torch`  
 - **Jupyter Notebook:** Interactive analysis and visualization  
 
 ---
@@ -55,18 +55,25 @@ This project analyzes sentiment patterns in social media text data related to di
 
 ---
 
-## Example Visualizations
-- **Overall Sentiment Distribution:** Bar chart showing the counts of positive, neutral, and negative posts.  
-- **Heatmap of Sentiment by Game:** Shows the proportion of each sentiment type for all games, highlighting which games are positively or negatively perceived.
+## Alternative / Future Improvements
 
----
+Currently, sentiment analysis is performed using **VADER**. As an alternative, modern transformer-based models from Hugging Face can be used for more accurate sentiment detection. Example:
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request for improvements, bug fixes, or additional features.
+```python
+from transformers import pipeline
 
+# Load pre-trained sentiment-analysis pipeline
+sentiment_pipeline = pipeline("sentiment-analysis")
 
----
+# Run sentiment analysis on cleaned text
+res = sentiment_pipeline(df['cleaned'].tolist())
 
-## Contact
-- **Author:** Aryan Kumar  
-- **GitHub:** [github.com/AryanKumar1416](https://github.com/AryanKumar1416)
+# Add results to DataFrame
+df['transformers_label'] = [r['label'] for r in res]
+df['transformers_score'] = [r['score'] for r in res]
+
+# Map labels to simple categories if needed
+df['sentiment'] = df['transformers_label'].map({
+    'POSITIVE': 'positive',
+    'NEGATIVE': 'negative'
+})
